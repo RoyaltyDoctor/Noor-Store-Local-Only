@@ -2,13 +2,13 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
-import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
+import { createHashRouter, RouterProvider, Outlet } from "react-router-dom";
 import Layout from "./components/Layout";
 import { useEffect } from "react";
 import { useThemeStore } from "./themeStore";
 
 // Use a data router to support useBlocker
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     path: "*",
     element: <Layout />
