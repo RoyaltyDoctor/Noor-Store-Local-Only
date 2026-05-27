@@ -23,6 +23,7 @@ export default function Settings() {
   const customers = useStore(state => state.customers);
   const orders = useStore(state => state.orders);
   const deletedOrders = useStore(state => state.deletedOrders);
+  const batches = useStore(state => state.batches || []);
   const mergeBackup = useStore(state => state.mergeBackup);
   const { theme, setTheme } = useThemeStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -39,11 +40,13 @@ export default function Settings() {
   const [exportOptions, setExportOptions] = useState({
     customers: true,
     orders: true,
+    batches: true,
   });
   // Import Options state
   const [importOptions, setImportOptions] = useState({
     customers: true,
     orders: true,
+    batches: true,
   });
 
   // Calculate merge statistics
@@ -51,10 +54,13 @@ export default function Settings() {
   let customersNewCount = 0;
   let ordersOverlapCount = 0;
   let ordersNewCount = 0;
+  let batchesOverlapCount = 0;
+  let batchesNewCount = 0;
 
   if (pendingBackup) {
     const currentCustIds = new Set((customers || []).map((c) => c.id));
     const currentOrderIds = new Set((orders || []).map((o) => o.id));
+    const currentBatchIds = new Set((batches || []).map((b) => b.id));
 
     if (importOptions.customers) {
       const bCusts = Array.isArray(pendingBackup.customers)
@@ -75,10 +81,20 @@ export default function Settings() {
         else ordersNewCount++;
       });
     }
+
+    if (importOptions.batches) {
+      const bBatches = Array.isArray(pendingBackup.batches)
+        ? pendingBackup.batches
+        : [];
+      bBatches.forEach((b: any) => {
+        if (currentBatchIds.has(b.id)) batchesOverlapCount++;
+        else batchesNewCount++;
+      });
+    }
   }
 
   const handleExport = async () => {
-    if (!exportOptions.customers && !exportOptions.orders) {
+    if (!exportOptions.customers && !exportOptions.orders && !exportOptions.batches) {
       alert("الرجاء تحديد نوع واحد على الأقل من البيانات للتصدير!");
       return;
     }
@@ -89,6 +105,7 @@ export default function Settings() {
       customers: exportOptions.customers ? customers : [],
       orders: exportOptions.orders ? orders : [],
       deletedOrders: exportOptions.orders ? deletedOrders : [],
+      batches: exportOptions.batches ? batches : [],
     };
 
     const jsonString = JSON.stringify(backupData, null, 2);
@@ -96,6 +113,7 @@ export default function Settings() {
     let fileNameParts = [];
     if (exportOptions.customers) fileNameParts.push("Customers");
     if (exportOptions.orders) fileNameParts.push("Orders");
+    if (exportOptions.batches) fileNameParts.push("Batches");
     const fileName = `Noor-Store-${fileNameParts.join("-")}-${format(new Date(), "yyyy-MM-dd-HH-mm")}.json`;
 
     const isCapacitor = typeof window !== "undefined" && (window as any).Capacitor;
@@ -148,7 +166,7 @@ export default function Settings() {
 
         if (
           typeof backupData !== "object" ||
-          (!backupData.customers && !backupData.orders)
+          (!backupData.customers && !backupData.orders && !backupData.batches)
         ) {
           throw new Error("ملف النسخة الاحتياطية غير صالح أو تالف");
         }
@@ -157,6 +175,7 @@ export default function Settings() {
         setImportOptions({
           customers: (backupData.customers?.length || 0) > 0,
           orders: (backupData.orders?.length || 0) > 0,
+          batches: (backupData.batches?.length || 0) > 0,
         });
         setShowConfirmDialog(true);
       } catch (err) {
@@ -187,7 +206,7 @@ export default function Settings() {
 
   const confirmImport = () => {
     if (!pendingBackup) return;
-    if (!importOptions.customers && !importOptions.orders) {
+    if (!importOptions.customers && !importOptions.orders && !importOptions.batches) {
       alert("الرجاء تحديد خيار واحد على الأقل للاستيراد!");
       return;
     }
@@ -204,6 +223,9 @@ export default function Settings() {
         : [];
       const deletedOrdersToMerge = importOptions.orders
         ? pendingBackup.deletedOrders || []
+        : [];
+      const batchesToMerge = importOptions.batches
+        ? pendingBackup.batches || []
         : [];
 
       // Smart Dependency Resolution:
@@ -236,6 +258,7 @@ export default function Settings() {
         customers: customersToMerge,
         orders: ordersToMerge,
         deletedOrders: deletedOrdersToMerge,
+        batches: batchesToMerge,
       });
 
       setImportStatus("success");
@@ -328,16 +351,37 @@ export default function Settings() {
                           checked={exportOptions.orders}
                           onChange={(e) => {
                             const checked = e.target.checked;
-                            setExportOptions({
-                              customers: true,
+                            setExportOptions(prev => ({
+                              ...prev,
                               orders: checked,
-                            });
+                            }));
                           }}
                         />
                         <span>
                           تضمين سجل الطلبيات{" "}
                           <span className="text-xs text-gray-400">
                             ({orders.length})
+                          </span>
+                        </span>
+                      </label>
+
+                      <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer dark:text-gray-200">
+                        <input
+                          type="checkbox"
+                          className="rounded text-blue-600 focus:ring-blue-500 w-4 h-4 dark:text-blue-400"
+                          checked={exportOptions.batches}
+                          onChange={(e) => {
+                            const checked = e.target.checked;
+                            setExportOptions(prev => ({
+                              ...prev,
+                              batches: checked,
+                            }));
+                          }}
+                        />
+                        <span>
+                          تضمين بيانات السلات{" "}
+                          <span className="text-xs text-gray-400">
+                            ({batches.length})
                           </span>
                         </span>
                       </label>
@@ -357,7 +401,7 @@ export default function Settings() {
               {/* Import Section */}
               <div className="flex-1 border-t md:border-t-0 md:border-r border-gray-200 pt-6 md:pt-0 md:pr-6 dark:border-gray-700 dark:border-gray-600">
                 <div className="flex gap-4">
-                  <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0 text-purple-600 mt-1 dark:text-purple-400">
+                  <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0 text-purple-600 mt-1 dark:bg-purple-900/50 dark:text-purple-400">
                     <UploadCloud className="w-5 h-5" />
                   </div>
                   <div className="flex-1">
@@ -510,6 +554,31 @@ export default function Settings() {
                       {pendingBackup.orders?.length || 0}
                     </span>
                   </label>
+
+                  <label
+                    className={`flex justify-between text-sm items-center cursor-pointer p-2 rounded-lg border ${importOptions.batches ? "bg-white border-purple-200 shadow-sm dark:bg-gray-800" : "border-transparent opacity-70 hover:bg-purple-100/50"}`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={importOptions.batches}
+                        onChange={(e) =>
+                          setImportOptions((p) => ({
+                            ...p,
+                            batches: e.target.checked,
+                          }))
+                        }
+                        disabled={!(pendingBackup.batches?.length > 0)}
+                        className="rounded text-purple-600 focus:ring-purple-500 w-4 h-4 dark:text-purple-400"
+                      />
+                      <span className="font-medium text-purple-900 dark:text-purple-100">
+                        سجل السلات
+                      </span>
+                    </div>
+                    <span className="font-bold font-mono">
+                      {pendingBackup.batches?.length || 0}
+                    </span>
+                  </label>
                 </div>
               </div>
 
@@ -565,6 +634,33 @@ export default function Settings() {
                         <span>طلبيات جديدة ستتم إضافتها:</span>
                         <span className="font-mono font-bold">
                           {ordersNewCount}
+                        </span>
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                <div className="h-px bg-gray-200 w-full dark:bg-gray-600" />
+
+                <div className="space-y-1 text-xs">
+                  <div className="flex justify-between items-center text-gray-600 dark:text-gray-300">
+                    <span>السلات الحالية في التطبيق:</span>
+                    <span className="font-mono">
+                      {batches?.length || 0}
+                    </span>
+                  </div>
+                  {importOptions.batches && (
+                    <>
+                      <div className="flex justify-between items-center text-amber-600 px-2 border-r-2 border-amber-300 dark:text-amber-400">
+                        <span>سيتم تحديثها (بيانات مكررة):</span>
+                        <span className="font-mono font-bold">
+                          {batchesOverlapCount}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center text-green-600 px-2 border-r-2 border-green-400 dark:text-green-400">
+                        <span>سلات جديدة ستتم إضافتها:</span>
+                        <span className="font-mono font-bold">
+                          {batchesNewCount}
                         </span>
                       </div>
                     </>
