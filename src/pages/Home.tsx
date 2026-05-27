@@ -271,11 +271,19 @@ export default function Home() {
   const handleSelectCustomer = (cid: string) => {
     const oid = addOrder(cid);
     navigate(`/order/${oid}`);
-    setShowNewOrderModal(false);
   };
 
   const handleCreateCustomerAndOrder = () => {
     if (!newCustomerForm.name) return;
+    const trimmedNewName = newCustomerForm.name.trim().toLowerCase();
+    const isDuplicate = customers.some(
+      (c) => c.name.trim().toLowerCase() === trimmedNewName
+    );
+    if (isDuplicate) {
+      alert("هذا الاسم موجود بالفعل! يرجى اختيار اسم مستخدم مختلف لتجنب تكرار البيانات.");
+      return;
+    }
+
     const cid = addCustomer({
       name: newCustomerForm.name,
       phone: newCustomerForm.phone,
@@ -284,7 +292,6 @@ export default function Home() {
     });
     const oid = addOrder(cid);
     navigate(`/order/${oid}`);
-    setShowNewOrderModal(false);
   };
 
   const toggleMultiselectStatus = (status: OrderStatus) => {
@@ -895,7 +902,6 @@ export default function Home() {
             <button
               onClick={() => {
                 handleNavigateToOrder(itemsModalOrder.id);
-                setItemsModalOrder(null);
               }}
               className="mt-4 w-full bg-purple-100 text-purple-700 py-3 rounded-xl font-bold text-sm active:bg-purple-200 transition-colors dark:text-purple-300 dark:bg-purple-900/40"
             >

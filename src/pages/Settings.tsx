@@ -18,6 +18,8 @@ import { useThemeStore, Theme } from "../themeStore";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
 import { Share } from "@capacitor/share";
+import { Capacitor } from "@capacitor/core";
+import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
 
 export default function Settings() {
   const customers = useStore(state => state.customers);
@@ -116,25 +118,33 @@ export default function Settings() {
     if (exportOptions.batches) fileNameParts.push("Batches");
     const fileName = `Noor-Store-${fileNameParts.join("-")}-${format(new Date(), "yyyy-MM-dd-HH-mm")}.json`;
 
-    const isCapacitor = typeof window !== "undefined" && (window as any).Capacitor;
+    const isNative = Capacitor.isNativePlatform();
 
-    if (isCapacitor) {
+    if (isNative) {
       try {
-        // Copy to clipboard automatically to guarantee user has the data
+        // Copy to clipboard automatically as a solid background guarantee
         if (navigator.clipboard && navigator.clipboard.writeText) {
           await navigator.clipboard.writeText(jsonString);
         }
 
-        // Use standard Capacitor Share API to let user share/save the file or text description
+        // Write the JSON string to a cached file so Android can share it as an ACTUAL .json file!
+        const writeResult = await Filesystem.writeFile({
+          path: fileName,
+          data: jsonString,
+          directory: Directory.Cache,
+          encoding: Encoding.UTF8
+        });
+
+        // Use standard Capacitor Share API to let user share/save the real file url
         await Share.share({
           title: fileName,
-          text: jsonString,
+          url: writeResult.uri,
           dialogTitle: "حفظ وتصدير النسخة الاحتياطية",
         });
 
-        alert("تم نسخ البيانات تلقائياً لحافظة الهاتف وفتح خيارات المشاركة لحفظ ملف النسخة الاحتياطية بنجاح!");
+        alert("تم فتح خيارات النظام لحفظ الملف بنجاح! (تم أيضاً نسخ البيانات تلقائياً لحافظة هاتفك للضمان).");
       } catch (err) {
-        console.error("Failed to share using Capacitor:", err);
+        console.error("Failed to share using Capacitor Filesystem:", err);
         alert("لم تكتمل المشاركة، ولكن تم نسخ الكود الاحتياطي بالكامل إلى حافظة هاتفكم للضمان. يمكنك الآن لصقه وحفظه في أي تطبيق ملاحظات أو ملف نصي.");
       }
     } else {
@@ -301,9 +311,11 @@ export default function Settings() {
               </div>
               <button
                 onClick={() => setShowAdvancedSettings(false)}
-                className="text-gray-400 hover:text-gray-600 p-2 rounded-xl hover:bg-gray-100 transition-colors"
+                className="flex items-center gap-1 bg-red-50 text-red-600 hover:bg-red-100 p-2 rounded-xl transition-all shadow-sm font-semibold text-xs border border-red-200/50 dark:bg-red-950/40 dark:text-red-400 dark:hover:bg-red-900/50 dark:border-red-900/30 active:scale-95"
+                title="إغلاق النافذة"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
+                <span>إغلاق</span>
               </button>
             </div>
 
@@ -401,7 +413,7 @@ export default function Settings() {
               {/* Import Section */}
               <div className="flex-1 border-t md:border-t-0 md:border-r border-gray-200 pt-6 md:pt-0 md:pr-6 dark:border-gray-700 dark:border-gray-600">
                 <div className="flex gap-4">
-                  <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0 text-purple-600 mt-1 dark:bg-purple-900/50 dark:text-purple-400">
+                  <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0 text-purple-600 mt-1 dark:bg-purple-950/40 dark:text-purple-400">
                     <UploadCloud className="w-5 h-5" />
                   </div>
                   <div className="flex-1">
@@ -474,7 +486,8 @@ export default function Settings() {
               </h3>
               <button
                 onClick={cancelImport}
-                className="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 transition-colors"
+                className="text-gray-400 hover:text-red-600 p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                title="إلغاء وإغلاق"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -506,7 +519,7 @@ export default function Settings() {
 
                 <div className="space-y-2 pt-1">
                   <label
-                    className={`flex justify-between text-sm items-center cursor-pointer p-2 rounded-lg border ${importOptions.customers ? "bg-white border-purple-200 shadow-sm dark:bg-gray-800" : "border-transparent opacity-70 hover:bg-purple-100/50"}`}
+                    className={`flex justify-between text-sm items-center cursor-pointer p-2 rounded-lg border ${importOptions.customers ? "bg-white border-purple-200 shadow-sm dark:bg-gray-800 dark:border-purple-800" : "border-transparent opacity-70 hover:bg-purple-100/50 dark:hover:bg-purple-950/35"}`}
                   >
                     <div className="flex items-center gap-2">
                       <input
@@ -531,7 +544,7 @@ export default function Settings() {
                   </label>
 
                   <label
-                    className={`flex justify-between text-sm items-center cursor-pointer p-2 rounded-lg border ${importOptions.orders ? "bg-white border-purple-200 shadow-sm dark:bg-gray-800" : "border-transparent opacity-70 hover:bg-purple-100/50"}`}
+                    className={`flex justify-between text-sm items-center cursor-pointer p-2 rounded-lg border ${importOptions.orders ? "bg-white border-purple-200 shadow-sm dark:bg-gray-800 dark:border-purple-800" : "border-transparent opacity-70 hover:bg-purple-100/50 dark:hover:bg-purple-950/35"}`}
                   >
                     <div className="flex items-center gap-2">
                       <input
@@ -556,7 +569,7 @@ export default function Settings() {
                   </label>
 
                   <label
-                    className={`flex justify-between text-sm items-center cursor-pointer p-2 rounded-lg border ${importOptions.batches ? "bg-white border-purple-200 shadow-sm dark:bg-gray-800" : "border-transparent opacity-70 hover:bg-purple-100/50"}`}
+                    className={`flex justify-between text-sm items-center cursor-pointer p-2 rounded-lg border ${importOptions.batches ? "bg-white border-purple-200 shadow-sm dark:bg-gray-800 dark:border-purple-800" : "border-transparent opacity-70 hover:bg-purple-100/50 dark:hover:bg-purple-950/35"}`}
                   >
                     <div className="flex items-center gap-2">
                       <input
@@ -702,7 +715,7 @@ export default function Settings() {
               </button>
               <button
                 onClick={cancelImport}
-                className="flex-[0.5] bg-white text-gray-700 font-bold py-2.5 px-4 rounded-xl border border-gray-200 hover:bg-gray-50 active:scale-95 transition-all text-sm dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600"
+                className="flex-[0.5] bg-white text-gray-700 font-bold py-2.5 px-4 rounded-xl border border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 active:scale-95 transition-all text-sm dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600"
               >
                 إلغاء
               </button>
@@ -727,7 +740,7 @@ export default function Settings() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden dark:bg-gray-800 dark:shadow-none dark:border-gray-700">
           <button
             onClick={() => setShowAdvancedSettings(true)}
-            className="w-full flex items-center justify-between p-5 text-right hover:bg-gray-50 transition-colors"
+            className="w-full flex items-center justify-between p-5 text-right hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors"
           >
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">

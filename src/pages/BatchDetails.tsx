@@ -142,12 +142,20 @@ export default function BatchDetails() {
       const oid = addOrder(cid);
       updateOrder(oid, { batchId: id, trackingNumber: batch?.trackingNumber, status: batch?.status || "PENDING" });
       navigate(`/order/${oid}`);
-      setShowNewOrderModal(false);
     });
   };
 
   const handleCreateCustomerAndOrder = () => {
     if (!newCustomerForm.name) return;
+    const trimmedNewName = newCustomerForm.name.trim().toLowerCase();
+    const isDuplicate = customers.some(
+      (c) => c.name.trim().toLowerCase() === trimmedNewName
+    );
+    if (isDuplicate) {
+      alert("هذا الاسم موجود بالفعل! يرجى اختيار اسم مستخدم مختلف لتجنب تكرار البيانات.");
+      return;
+    }
+
     handleBackOrCancel(() => {
       const cid = addCustomer({
         name: newCustomerForm.name,
@@ -158,7 +166,6 @@ export default function BatchDetails() {
       const oid = addOrder(cid);
       updateOrder(oid, { batchId: id, trackingNumber: batch?.trackingNumber, status: batch?.status || "PENDING" });
       navigate(`/order/${oid}`);
-      setShowNewOrderModal(false);
     });
   };
 

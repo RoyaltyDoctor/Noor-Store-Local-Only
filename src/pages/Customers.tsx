@@ -156,6 +156,15 @@ export default function Customers() {
 
   const handleSave = () => {
     if (!formData.name) return;
+    const trimmedNewName = formData.name.trim().toLowerCase();
+    const isDuplicate = customers.some(
+      (c) => c.name.trim().toLowerCase() === trimmedNewName && c.id !== editingId
+    );
+    if (isDuplicate) {
+      alert("هذا الاسم موجود بالفعل! يرجى اختيار اسم مستخدم مختلف لتجنب تكرار البيانات.");
+      return;
+    }
+
     if (editingId) {
       updateCustomer(editingId, formData);
     } else {
