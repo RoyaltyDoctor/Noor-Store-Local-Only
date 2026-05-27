@@ -1,63 +1,75 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%" dir="ltr">
   <defs>
-    <!-- Violet/Purple Gradient for Left Column & Handle -->
-    <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#a855f7" />
-      <stop offset="100%" stop-color="#6b21a8" />
+    <!-- Vibrant Purple-Pink to Deep Violet-Purple Gradient for Left Leg & Handle -->
+    <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#bf55ec" />
+      <stop offset="40%" stop-color="#8e44ad" />
+      <stop offset="100%" stop-color="#4a017e" />
     </linearGradient>
 
-    <!-- Cyan to Deep Blue Gradient for the Dynamic Right/Diagonal Section -->
+    <!-- Handle Gradient (Purple to Cyan-Blue) -->
+    <linearGradient id="handleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#8e44ad" />
+      <stop offset="50%" stop-color="#9b5de5" />
+      <stop offset="100%" stop-color="#00bbf9" />
+    </linearGradient>
+
+    <!-- Deep Midnight Blue to Indigo for Inner 3D Back-wall Shadow -->
+    <linearGradient id="darkIndigoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7" />
+      <stop offset="50%" stop-color="#1e1b4b" />
+      <stop offset="100%" stop-color="#090514" />
+    </linearGradient>
+
+    <!-- Shiny Turquoise Cyan to Royal Blue to Deep Cobalt Gradient for the Ribbon Flap -->
     <linearGradient id="blueCyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#06b6d4" />
-      <stop offset="50%" stop-color="#3b82f6" />
+      <stop offset="0%" stop-color="#00f2fe" />
+      <stop offset="50%" stop-color="#0077ff" />
       <stop offset="100%" stop-color="#1d4ed8" />
     </linearGradient>
   </defs>
 
-  <!-- 1. The Bag Handle at the top -->
-  <path d="M210,140 C210,75 302,75 302,140" 
+  <!-- 1. The Arching Bag Handle on top (Scaled for high visibility) -->
+  <path d="M200,150 C200,48 312,48 312,150" 
         fill="none" 
-        stroke="url(#purpleGrad)" 
-        stroke-width="26" 
+        stroke="url(#handleGrad)" 
+        stroke-width="32" 
         stroke-linecap="round" />
 
-  <!-- 2. Left Violent/Purple Leg of the N-Bag -->
-  <path d="M220,145 
-           L186,145 
-           C183,145 180,147 179,150
-           L160,358 
-           C159,368 167,377 178,377 
-           L248,377 
-           C242,340 220,265 204,220
-           C192,185 205,152 220,145 Z" 
+  <!-- 2. Left Violet/Purple Section (Left leg of N-Bag) -->
+  <path d="M215,145 
+           H130
+           C118,145 108,153 106,165
+           L72,425
+           C69,440 80,450 96,450
+           H210
+           C150,380 165,220 215,145 Z" 
         fill="url(#purpleGrad)" />
 
-  <!-- 3. Right & Diagonal Blue-Cyan Section of the N-Bag -->
-  <path d="M246,145
-           C260,154 285,190 308,242
-           C328,288 342,345 342,374
-           C342,376 340,377 338,377
-           L276,377
-           C270,360 252,310 228,255
-           C205,202 218,162 246,145 Z" 
-        fill="none" /> <!-- Helper shape marker -->
+  <!-- 3. Inner 3D Deep Blue Back-wall of the Bag -->
+  <path d="M235,145
+           H375
+           C387,145 397,153 399,165
+           L433,425
+           C436,440 425,450 409,450
+           H235
+           C185,380 190,220 235,145 Z"
+        fill="url(#darkIndigoGrad)" />
 
-  <path d="M240,145
-           C240,145 240,145 242,145
-           L318,151
-           C323,151 326,155 325,160
-           L298,358
-           C297,368 289,377 278,377
-           C240,377 215,315 195,255
-           C174,192 195,152 240,145 Z"
+  <!-- 4. Foreground Cyan-Blue Ribbon (Diagonal-to-Right Front Flap of N-Bag) -->
+  <path d="M235,145
+           H318
+           C288,210 322,330 397,440
+           C402,447 396,450 388,450
+           H235
+           C185,380 190,220 235,145 Z"
         fill="url(#blueCyanGrad)" />
 
-  <!-- The elegant sweeping overlay curve representing the white gap/fold in the bag -->
-  <path d="M216,145
-           C230,155 258,198 276,245
-           C295,295 308,355 310,377
-           L288,377
-           C284,342 270,285 252,242
-           C235,198 215,160 216,145 Z" 
+  <!-- 5. The Elegant Sweeping White Gap Dividing Purple and Cyan-Blue Fold (Creates the N-letter) -->
+  <path d="M215,145
+           C215,145 220,145 235,145
+           C185,220 180,380 235,450
+           H210
+           C150,380 165,220 215,145 Z" 
         fill="#ffffff" />
 </svg>
