@@ -365,36 +365,39 @@ export default function Home() {
           </button>
 
           {showSortDropdown && (
-            <div className="absolute top-12 left-0 w-48 bg-white border border-gray-200 rounded-xl shadow-xl z-20 py-2 dark:bg-gray-800 dark:border-gray-700 dark:shadow-none">
-              <div className="px-4 py-2 border-b border-gray-100 mb-1 dark:border-gray-700">
-                <span className="text-sm font-bold text-gray-500 dark:text-gray-400">
-                  ترتيب حسب
-                </span>
+            <>
+              <div className="fixed inset-0 z-10" onClick={() => setShowSortDropdown(false)} />
+              <div className="absolute top-12 left-0 w-48 bg-white border border-gray-200 rounded-xl shadow-xl z-20 py-2 dark:bg-gray-800 dark:border-gray-700 dark:shadow-none">
+                <div className="px-4 py-2 border-b border-gray-100 mb-1 dark:border-gray-700">
+                  <span className="text-sm font-bold text-gray-500 dark:text-gray-400">
+                    ترتيب حسب
+                  </span>
+                </div>
+                {[
+                  { id: "NEWEST", label: "الأحدث أولاً" },
+                  { id: "OLDEST", label: "الأقدم أولاً" },
+                  { id: "HIGHEST_PRICE", label: "الأعلى سعراً" },
+                  { id: "LOWEST_PRICE", label: "الأقل سعراً" },
+                ].map((option) => (
+                  <button
+                    key={option.id}
+                    onClick={() => {
+                      setSortOption(option.id as any);
+                      setShowSortDropdown(false);
+                    }}
+                    className={clsx(
+                      "w-full text-right px-4 py-2 text-sm sm:text-base flex items-center gap-2",
+                      sortOption === option.id
+                        ? "bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 font-bold"
+                        : "text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700/50",
+                    )}
+                  >
+                    {sortOption === option.id && <Check className="w-4 h-4 ml-auto block" />}
+                    <span className={sortOption === option.id ? "ml-4" : ""}>{option.label}</span>
+                  </button>
+                ))}
               </div>
-              {[
-                { id: "NEWEST", label: "الأحدث أولاً" },
-                { id: "OLDEST", label: "الأقدم أولاً" },
-                { id: "HIGHEST_PRICE", label: "الأعلى سعراً" },
-                { id: "LOWEST_PRICE", label: "الأقل سعراً" },
-              ].map((option) => (
-                <button
-                  key={option.id}
-                  onClick={() => {
-                    setSortOption(option.id as any);
-                    setShowSortDropdown(false);
-                  }}
-                  className={clsx(
-                    "w-full text-right px-4 py-2 text-sm sm:text-base flex items-center gap-2",
-                    sortOption === option.id
-                      ? "bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 font-bold"
-                      : "text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700/50",
-                  )}
-                >
-                  {sortOption === option.id && <Check className="w-4 h-4 ml-auto block" />}
-                  <span className={sortOption === option.id ? "ml-4" : ""}>{option.label}</span>
-                </button>
-              ))}
-            </div>
+            </>
           )}
         </div>
         <div className="relative">
@@ -415,40 +418,43 @@ export default function Home() {
           </button>
           
           {showDateDropdown && (
-            <div className="absolute top-12 left-0 w-48 bg-white border border-gray-200 rounded-xl shadow-xl z-20 py-2 dark:bg-gray-800 dark:border-gray-600 dark:shadow-none">
-              <div className="px-4 py-2 border-b border-gray-100 mb-1 dark:border-gray-700 dark:border-gray-700">
-                <span className="text-xs font-bold text-gray-500 dark:text-gray-400">
-                تاريخ الطلبية
-                </span>
-              </div>
+            <>
+              <div className="fixed inset-0 z-10" onClick={() => setShowDateDropdown(false)} />
+              <div className="absolute top-12 left-0 w-48 bg-white border border-gray-200 rounded-xl shadow-xl z-20 py-2 dark:bg-gray-800 dark:border-gray-600 dark:shadow-none">
+                <div className="px-4 py-2 border-b border-gray-100 mb-1 dark:border-gray-700 dark:border-gray-700">
+                  <span className="text-xs font-bold text-gray-500 dark:text-gray-400">
+                  تاريخ الطلبية
+                  </span>
+                </div>
 
-              {[
-                { id: "ALL", label: "الكل" },
-                { id: "TODAY", label: "اليوم" },
-                { id: "THIS_WEEK", label: "هذا الأسبوع" },
-                { id: "THIS_MONTH", label: "هذا الشهر" },
-                { id: "CUSTOM", label: "فترة محددة..." },
-              ].map((filter) => (
-                <button
-                  key={filter.id}
-                  onClick={() => {
-                    setDateFilter(filter.id as DateFilterType);
-                    setShowDateDropdown(false);
-                  }}
-                  className={clsx(
-                    "w-full text-right px-3 py-2 text-sm sm:text-base flex items-center gap-2 transition-colors outline-none",
-                    dateFilter === filter.id
-                      ? "bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 font-bold"
-                      : "text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700/50"
-                  )}
-                >
-                  <div className="flex items-center flex-1">
-                    {dateFilter === filter.id && <Check className="w-4 h-4 ml-auto block" />}
-                    <span className={clsx(dateFilter === filter.id ? "ml-4" : "")}>{filter.label}</span>
-                  </div>
-                </button>
-              ))}
-            </div>
+                {[
+                  { id: "ALL", label: "الكل" },
+                  { id: "TODAY", label: "اليوم" },
+                  { id: "THIS_WEEK", label: "هذا الأسبوع" },
+                  { id: "THIS_MONTH", label: "هذا الشهر" },
+                  { id: "CUSTOM", label: "فترة محددة..." },
+                ].map((filter) => (
+                  <button
+                    key={filter.id}
+                    onClick={() => {
+                      setDateFilter(filter.id as DateFilterType);
+                      setShowDateDropdown(false);
+                    }}
+                    className={clsx(
+                      "w-full text-right px-3 py-2 text-sm sm:text-base flex items-center gap-2 transition-colors outline-none",
+                      dateFilter === filter.id
+                        ? "bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 font-bold"
+                        : "text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700/50"
+                    )}
+                  >
+                    <div className="flex items-center flex-1">
+                      {dateFilter === filter.id && <Check className="w-4 h-4 ml-auto block" />}
+                      <span className={clsx(dateFilter === filter.id ? "ml-4" : "")}>{filter.label}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </>
           )}
         </div>
         <div className="relative">
@@ -469,134 +475,137 @@ export default function Home() {
           </button>
 
           {showFilterDropdown && (
-            <div className="absolute top-12 left-0 w-56 bg-white border border-gray-200 rounded-xl shadow-xl z-20 py-2 dark:bg-gray-800 dark:border-gray-600 dark:shadow-none">
-              <div className="px-4 py-2 border-b border-gray-100 flex justify-between items-center mb-1 dark:border-gray-700 dark:border-gray-700">
-                <span className="text-xs font-bold text-gray-500 dark:text-gray-400">
-                طريقة الفلترة
-                </span>
-                <button
-                  onClick={() => setIsMultiSelectMode(!isMultiSelectMode)}
-                  className={clsx(
-                    "text-xs font-bold flex items-center gap-1 px-2 py-1 rounded transition-colors",
-                    isMultiSelectMode
-                      ? "bg-purple-100 text-purple-700"
-                      : "bg-gray-100 text-gray-600",
-                  )}
-                >
-                  <LayoutList className="w-3 h-3" /> متعدد
-                </button>
-              </div>
-
-              <div className="px-3 pb-2 mb-2 border-b border-gray-50 flex justify-between text-[11px] font-bold dark:border-gray-700">
-                <button
-                  onClick={() => {
-                    if (isMultiSelectMode)
-                      setSelectedStatusesMult([
-                        "PENDING",
-                        "ORDERED",
-                        "RECEIVED",
-                        "SHIPPING",
-                        "DELIVERED",
-                      ]);
-                    else {
-                      setSelectedStatus("ALL");
-                      setShowFilterDropdown(false);
-                    }
-                  }}
-                  className={clsx(
-                    "px-2 py-1 transition-colors rounded hover:bg-gray-50 dark:hover:bg-gray-700/50",
-                    (
-                      isMultiSelectMode
-                        ? selectedStatusesMult.length === 5
-                        : selectedStatus === "ALL"
-                    )
-                      ? "text-purple-700 bg-purple-50 dark:bg-purple-900/30 dark:text-purple-400"
-                      : "text-gray-500 dark:text-gray-400",
-                  )}
-                >
-                  {isMultiSelectMode ? "تحديد الكل" : "عرض الكل"}
-                </button>
-                <button
-                  onClick={() => {
-                    if (isMultiSelectMode)
-                      setSelectedStatusesMult([
-                        "PENDING",
-                        "ORDERED",
-                        "RECEIVED",
-                        "SHIPPING",
-                      ]);
-                    else {
-                      setSelectedStatus("ACTIVE");
-                      setShowFilterDropdown(false);
-                    }
-                  }}
-                  className={clsx(
-                    "px-2 py-1 transition-colors rounded hover:bg-gray-50 dark:hover:bg-gray-700/50",
-                    (
-                      isMultiSelectMode
-                        ? selectedStatusesMult.length === 4 &&
-                          !selectedStatusesMult.includes("DELIVERED")
-                        : selectedStatus === "ACTIVE"
-                    )
-                      ? "text-purple-700 bg-purple-50 dark:bg-purple-900/30 dark:text-purple-400"
-                      : "text-gray-500 dark:text-gray-400",
-                  )}
-                >
-                  قيد التنفيذ
-                </button>
-              </div>
-
-              {Object.entries(STATUS_LABELS).map(([key, label]) => {
-                const isSelected = isMultiSelectMode
-                  ? selectedStatusesMult.includes(key as OrderStatus)
-                  : selectedStatus === key;
-                return (
+            <>
+              <div className="fixed inset-0 z-10" onClick={() => setShowFilterDropdown(false)} />
+              <div className="absolute top-12 left-0 w-56 bg-white border border-gray-200 rounded-xl shadow-xl z-20 py-2 dark:bg-gray-800 dark:border-gray-600 dark:shadow-none">
+                <div className="px-4 py-2 border-b border-gray-100 flex justify-between items-center mb-1 dark:border-gray-700 dark:border-gray-700">
+                  <span className="text-xs font-bold text-gray-500 dark:text-gray-400">
+                  طريقة الفلترة
+                  </span>
                   <button
-                    key={key}
+                    onClick={() => setIsMultiSelectMode(!isMultiSelectMode)}
+                    className={clsx(
+                      "text-xs font-bold flex items-center gap-1 px-2 py-1 rounded transition-colors",
+                      isMultiSelectMode
+                        ? "bg-purple-100 text-purple-700"
+                        : "bg-gray-100 text-gray-600",
+                    )}
+                  >
+                    <LayoutList className="w-3 h-3" /> متعدد
+                  </button>
+                </div>
+
+                <div className="px-3 pb-2 mb-2 border-b border-gray-50 flex justify-between text-[11px] font-bold dark:border-gray-700">
+                  <button
                     onClick={() => {
                       if (isMultiSelectMode)
-                        toggleMultiselectStatus(key as OrderStatus);
+                        setSelectedStatusesMult([
+                          "PENDING",
+                          "ORDERED",
+                          "RECEIVED",
+                          "SHIPPING",
+                          "DELIVERED",
+                        ]);
                       else {
-                        setSelectedStatus(key as OrderStatus);
+                        setSelectedStatus("ALL");
                         setShowFilterDropdown(false);
                       }
                     }}
-                    className="w-full text-right px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700/50 text-sm sm:text-base flex items-center gap-3 transition-colors outline-none"
-                  >
-                    {isMultiSelectMode ? (
-                      isSelected ? (
-                        <CheckSquare className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                      ) : (
-                        <Square className="w-4 h-4 text-gray-300 dark:text-gray-500" />
+                    className={clsx(
+                      "px-2 py-1 transition-colors rounded hover:bg-gray-50 dark:hover:bg-gray-700/50",
+                      (
+                        isMultiSelectMode
+                          ? selectedStatusesMult.length === 5
+                          : selectedStatus === "ALL"
                       )
-                    ) : (
-                      <div
+                        ? "text-purple-700 bg-purple-50 dark:bg-purple-900/30 dark:text-purple-400"
+                        : "text-gray-500 dark:text-gray-400",
+                    )}
+                  >
+                    {isMultiSelectMode ? "تحديد الكل" : "عرض الكل"}
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (isMultiSelectMode)
+                        setSelectedStatusesMult([
+                          "PENDING",
+                          "ORDERED",
+                          "RECEIVED",
+                          "SHIPPING",
+                        ]);
+                      else {
+                        setSelectedStatus("ACTIVE");
+                        setShowFilterDropdown(false);
+                      }
+                    }}
+                    className={clsx(
+                      "px-2 py-1 transition-colors rounded hover:bg-gray-50 dark:hover:bg-gray-700/50",
+                      (
+                        isMultiSelectMode
+                          ? selectedStatusesMult.length === 4 &&
+                            !selectedStatusesMult.includes("DELIVERED")
+                          : selectedStatus === "ACTIVE"
+                      )
+                        ? "text-purple-700 bg-purple-50 dark:bg-purple-900/30 dark:text-purple-400"
+                        : "text-gray-500 dark:text-gray-400",
+                    )}
+                  >
+                    قيد التنفيذ
+                  </button>
+                </div>
+
+                {Object.entries(STATUS_LABELS).map(([key, label]) => {
+                  const isSelected = isMultiSelectMode
+                    ? selectedStatusesMult.includes(key as OrderStatus)
+                    : selectedStatus === key;
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => {
+                        if (isMultiSelectMode)
+                          toggleMultiselectStatus(key as OrderStatus);
+                        else {
+                          setSelectedStatus(key as OrderStatus);
+                          setShowFilterDropdown(false);
+                        }
+                      }}
+                      className="w-full text-right px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700/50 text-sm sm:text-base flex items-center gap-3 transition-colors outline-none"
+                    >
+                      {isMultiSelectMode ? (
+                        isSelected ? (
+                          <CheckSquare className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                        ) : (
+                          <Square className="w-4 h-4 text-gray-300 dark:text-gray-500" />
+                        )
+                      ) : (
+                        <div
+                          className={clsx(
+                            "w-4 h-4 rounded-full border flex items-center justify-center transition-colors",
+                            isSelected
+                              ? "border-purple-600 bg-purple-600"
+                              : "border-gray-300 bg-white dark:border-gray-600 dark:bg-gray-800",
+                          )}
+                        >
+                          {isSelected && (
+                            <div className="w-1.5 h-1.5 bg-white rounded-full dark:bg-gray-800" />
+                          )}
+                        </div>
+                      )}
+                      <span
                         className={clsx(
-                          "w-4 h-4 rounded-full border flex items-center justify-center transition-colors",
+                          "transition-colors",
                           isSelected
-                            ? "border-purple-600 bg-purple-600"
-                            : "border-gray-300 bg-white dark:border-gray-600 dark:bg-gray-800",
+                            ? "text-purple-700 font-bold dark:text-purple-300"
+                            : "text-gray-700 dark:text-gray-300",
                         )}
                       >
-                        {isSelected && (
-                          <div className="w-1.5 h-1.5 bg-white rounded-full dark:bg-gray-800" />
-                        )}
-                      </div>
-                    )}
-                    <span
-                      className={clsx(
-                        "transition-colors",
-                        isSelected
-                          ? "text-purple-700 font-bold dark:text-purple-300"
-                          : "text-gray-700 dark:text-gray-300",
-                      )}
-                    >
-                      {label}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+                        {label}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </>
           )}
         </div>
       </div>
@@ -715,7 +724,7 @@ export default function Home() {
 
                 <div className="flex items-center gap-4 text-sm text-gray-600 mb-3 bg-gray-50 p-2 text-center rounded-xl dark:text-gray-300 dark:bg-gray-900">
                   <div
-                    className="flex-1 cursor-pointer hover:bg-gray-200 rounded transition-colors py-1"
+                    className="flex-1 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800 rounded transition-colors py-1"
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();

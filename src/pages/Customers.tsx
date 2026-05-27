@@ -426,7 +426,7 @@ export default function Customers() {
                 className="bg-white rounded-2xl border border-gray-100 shadow-sm flex flex-col transition-all hover:border-purple-200 relative overflow-hidden dark:bg-gray-800 dark:border-gray-700 dark:shadow-none"
               >
                 {editingId === c.id ? (
-                  <div className="p-4 bg-purple-50/30">
+                  <div className="p-4 bg-purple-50/30 dark:bg-purple-950/40">
                     <div className="flex justify-between items-center mb-2 border-b border-purple-100 pb-2 dark:border-gray-700">
                       <h3 className="font-bold text-purple-900 text-sm dark:text-purple-100">
                         تعديل معلومات العميل

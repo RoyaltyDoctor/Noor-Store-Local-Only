@@ -207,8 +207,14 @@ export default function Reports() {
 
       {/* Status Modal */}
       {selectedStatusModal && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex flex-col justify-end sm:justify-center p-0 sm:p-4 backdrop-blur-sm">
-          <div className="bg-gray-50 w-full sm:max-w-md h-[80vh] sm:h-auto sm:max-h-[85vh] rounded-t-3xl sm:rounded-3xl flex flex-col shadow-2xl overflow-hidden mt-auto sm:mt-0 dark:bg-gray-900 dark:shadow-none dark:bg-gray-800">
+        <div
+          className="fixed inset-0 z-50 bg-black/50 flex flex-col justify-end sm:justify-center p-0 sm:p-4 backdrop-blur-sm"
+          onClick={() => setSelectedStatusModal(null)}
+        >
+          <div
+            className="bg-gray-50 w-full sm:max-w-md h-[80vh] sm:h-auto sm:max-h-[85vh] rounded-t-3xl sm:rounded-3xl flex flex-col shadow-2xl overflow-hidden mt-auto sm:mt-0 dark:bg-gray-900 dark:shadow-none dark:bg-gray-800"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="bg-white p-4 border-b flex justify-between items-center shadow-sm z-10 sticky top-0 dark:bg-gray-800 dark:border-gray-700 dark:shadow-none">
               <div>
                 <h3
@@ -268,8 +274,14 @@ export default function Reports() {
 
       {/* Finance Modal */}
       {selectedFinanceModal && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex flex-col justify-end sm:justify-center p-0 sm:p-4 backdrop-blur-sm">
-          <div className="bg-gray-50 w-full sm:max-w-md h-[80vh] sm:h-auto sm:max-h-[85vh] rounded-t-3xl sm:rounded-3xl flex flex-col shadow-2xl overflow-hidden mt-auto sm:mt-0 dark:bg-gray-900 dark:shadow-none dark:bg-gray-800">
+        <div
+          className="fixed inset-0 z-50 bg-black/50 flex flex-col justify-end sm:justify-center p-0 sm:p-4 backdrop-blur-sm"
+          onClick={() => setSelectedFinanceModal(null)}
+        >
+          <div
+            className="bg-gray-50 w-full sm:max-w-md h-[80vh] sm:h-auto sm:max-h-[85vh] rounded-t-3xl sm:rounded-3xl flex flex-col shadow-2xl overflow-hidden mt-auto sm:mt-0 dark:bg-gray-900 dark:shadow-none dark:bg-gray-800"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="bg-white p-4 border-b flex justify-between items-center shadow-sm z-10 sticky top-0 dark:bg-gray-800 dark:border-gray-700 dark:shadow-none">
               <div>
                 <h3 className="font-bold text-gray-900 dark:text-white">

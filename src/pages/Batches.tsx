@@ -496,8 +496,15 @@ export default function Batches() {
       </div>
 
       {selectedBatchOrders && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-5 max-w-sm w-full dark:bg-gray-800 shadow-xl" dir="rtl">
+        <div
+          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+          onClick={() => setSelectedBatchOrders(null)}
+        >
+          <div
+            className="bg-white rounded-2xl p-5 max-w-sm w-full dark:bg-gray-800 shadow-xl"
+            dir="rtl"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-bold text-lg text-gray-900 dark:text-white">طلبات السلة ({selectedBatchOrders.batchNumber})</h3>
               <button
@@ -578,8 +585,15 @@ export default function Batches() {
       )}
 
       {selectedBatchCustomers && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-5 max-w-sm w-full dark:bg-gray-800 shadow-xl" dir="rtl">
+        <div
+          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+          onClick={() => setSelectedBatchCustomers(null)}
+        >
+          <div
+            className="bg-white rounded-2xl p-5 max-w-sm w-full dark:bg-gray-800 shadow-xl"
+            dir="rtl"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-bold text-lg text-gray-900 dark:text-white">عملاء السلة ({selectedBatchCustomers.batchNumber})</h3>
               <button

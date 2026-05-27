@@ -1216,8 +1216,14 @@ export default function OrderDetails() {
       )}
       {/* Select Batch Modal */}
       {showSelectBatchModal && (
-        <div className="fixed inset-0 z-[60] bg-black/50 flex items-end sm:items-center justify-center sm:p-4 pb-safe">
-          <div className="bg-white w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl p-4 shadow-xl max-h-[85vh] flex flex-col dark:bg-gray-800">
+        <div
+          className="fixed inset-0 z-[60] bg-black/50 flex items-end sm:items-center justify-center sm:p-4 pb-safe"
+          onClick={() => setShowSelectBatchModal(false)}
+        >
+          <div
+            className="bg-white w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl p-4 shadow-xl max-h-[85vh] flex flex-col dark:bg-gray-800"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-bold text-lg text-gray-900 dark:text-white flex items-center gap-2">
                 <ShoppingCart className="w-5 h-5 text-purple-600" />
@@ -1290,8 +1296,14 @@ export default function OrderDetails() {
 
       {/* Select Customer Modal */}
       {showSelectCustomerModal && (
-        <div className="fixed inset-0 z-[60] bg-black/50 flex items-end sm:items-center justify-center sm:p-4 pb-safe">
-          <div className="bg-white w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl p-4 shadow-xl max-h-[85vh] flex flex-col dark:bg-gray-800">
+        <div
+          className="fixed inset-0 z-[60] bg-black/50 flex items-end sm:items-center justify-center sm:p-4 pb-safe"
+          onClick={() => setShowSelectCustomerModal(false)}
+        >
+          <div
+            className="bg-white w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl p-4 shadow-xl max-h-[85vh] flex flex-col dark:bg-gray-800"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-bold text-lg text-gray-900 dark:text-white">تغيير العميل المرتبط بالطلبية</h3>
               <button

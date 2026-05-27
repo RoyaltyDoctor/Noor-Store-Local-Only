@@ -311,11 +311,10 @@ export default function Settings() {
               </div>
               <button
                 onClick={() => setShowAdvancedSettings(false)}
-                className="flex items-center gap-1 bg-red-50 text-red-600 hover:bg-red-100 p-2 rounded-xl transition-all shadow-sm font-semibold text-xs border border-red-200/50 dark:bg-red-950/40 dark:text-red-400 dark:hover:bg-red-900/50 dark:border-red-900/30 active:scale-95"
+                className="bg-red-50 text-red-600 hover:bg-red-100 p-2 rounded-xl transition-all shadow-sm font-semibold border border-red-200/50 dark:bg-red-950/40 dark:text-red-400 dark:hover:bg-red-900/50 dark:border-red-900/30 active:scale-95"
                 title="إغلاق النافذة"
               >
-                <X className="w-4 h-4" />
-                <span>إغلاق</span>
+                <X className="w-5 h-5" />
               </button>
             </div>
 

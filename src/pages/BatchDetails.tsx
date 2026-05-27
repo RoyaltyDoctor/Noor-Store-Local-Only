@@ -687,8 +687,14 @@ export default function BatchDetails() {
 
       {/* Link Orders Modal */}
       {showLinkModal && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center sm:p-4">
-          <div className="bg-white w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl p-4 shadow-xl max-h-[80vh] flex flex-col dark:bg-gray-800">
+        <div
+          className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center sm:p-4"
+          onClick={() => setShowLinkModal(false)}
+        >
+          <div
+            className="bg-white w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl p-4 shadow-xl max-h-[80vh] flex flex-col dark:bg-gray-800"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-bold text-lg text-gray-900 dark:text-white">إضافة طلبية للسلة</h3>
               <button
