@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Violet/Purple Gradient for Left Column & Handle -->
+    <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#a855f7" />
+      <stop offset="100%" stop-color="#6b21a8" />
+    </linearGradient>
+
+    <!-- Cyan to Deep Blue Gradient for the Dynamic Right/Diagonal Section -->
+    <linearGradient id="blueCyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06b6d4" />
+      <stop offset="50%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#1d4ed8" />
+    </linearGradient>
+  </defs>
+
+  <!-- 1. The Bag Handle at the top -->
+  <path d="M210,140 C210,75 302,75 302,140" 
+        fill="none" 
+        stroke="url(#purpleGrad)" 
+        stroke-width="26" 
+        stroke-linecap="round" />
+
+  <!-- 2. Left Violent/Purple Leg of the N-Bag -->
+  <path d="M220,145 
+           L186,145 
+           C183,145 180,147 179,150
+           L160,358 
+           C159,368 167,377 178,377 
+           L248,377 
+           C242,340 220,265 204,220
+           C192,185 205,152 220,145 Z" 
+        fill="url(#purpleGrad)" />
+
+  <!-- 3. Right & Diagonal Blue-Cyan Section of the N-Bag -->
+  <path d="M246,145
+           C260,154 285,190 308,242
+           C328,288 342,345 342,374
+           C342,376 340,377 338,377
+           L276,377
+           C270,360 252,310 228,255
+           C205,202 218,162 246,145 Z" 
+        fill="none" /> <!-- Helper shape marker -->
+
+  <path d="M240,145
+           C240,145 240,145 242,145
+           L318,151
+           C323,151 326,155 325,160
+           L298,358
+           C297,368 289,377 278,377
+           C240,377 215,315 195,255
+           C174,192 195,152 240,145 Z"
+        fill="url(#blueCyanGrad)" />
+
+  <!-- The elegant sweeping overlay curve representing the white gap/fold in the bag -->
+  <path d="M216,145
+           C230,155 258,198 276,245
+           C295,295 308,355 310,377
+           L288,377
+           C284,342 270,285 252,242
+           C235,198 215,160 216,145 Z" 
+        fill="#ffffff" />
+</svg>

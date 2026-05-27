@@ -125,11 +125,14 @@ export default function Layout() {
 
         {/* Header */}
         <header className="bg-white border-b px-4 py-3 flex items-center justify-between z-10 shadow-sm relative dark:bg-gray-800 dark:border-gray-700 dark:shadow-none">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white font-bold">
-              <Store className="w-4 h-4" />
-            </div>
-            <h1 className="font-bold text-lg text-gray-900 flex flex-col dark:text-white">
+          <div className="flex items-center gap-2.5">
+            <img
+              src="/icon.svg"
+              className="w-9 h-9 object-contain"
+              alt="Noor Store Logo"
+              referrerPolicy="no-referrer"
+            />
+            <h1 className="font-bold text-lg text-gray-900 flex flex-col dark:text-white tracking-tight">
               Noor Store
             </h1>
           </div>
