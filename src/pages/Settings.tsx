@@ -17,6 +17,7 @@ import { useStore } from "../store";
 import { useThemeStore, Theme } from "../themeStore";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
+import { Share } from "@capacitor/share";
 
 export default function Settings() {
   const customers = useStore(state => state.customers);
@@ -76,7 +77,7 @@ export default function Settings() {
     }
   }
 
-  const handleExport = () => {
+  const handleExport = async () => {
     if (!exportOptions.customers && !exportOptions.orders) {
       alert("الرجاء تحديد نوع واحد على الأقل من البيانات للتصدير!");
       return;
@@ -91,20 +92,45 @@ export default function Settings() {
     };
 
     const jsonString = JSON.stringify(backupData, null, 2);
-    const blob = new Blob([jsonString], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
 
     let fileNameParts = [];
     if (exportOptions.customers) fileNameParts.push("Customers");
     if (exportOptions.orders) fileNameParts.push("Orders");
+    const fileName = `Noor-Store-${fileNameParts.join("-")}-${format(new Date(), "yyyy-MM-dd-HH-mm")}.json`;
 
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `Noor-Store-${fileNameParts.join("-")}-${format(new Date(), "yyyy-MM-dd-HH-mm")}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    const isCapacitor = typeof window !== "undefined" && (window as any).Capacitor;
+
+    if (isCapacitor) {
+      try {
+        // Copy to clipboard automatically to guarantee user has the data
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(jsonString);
+        }
+
+        // Use standard Capacitor Share API to let user share/save the file or text description
+        await Share.share({
+          title: fileName,
+          text: jsonString,
+          dialogTitle: "حفظ وتصدير النسخة الاحتياطية",
+        });
+
+        alert("تم نسخ البيانات تلقائياً لحافظة الهاتف وفتح خيارات المشاركة لحفظ ملف النسخة الاحتياطية بنجاح!");
+      } catch (err) {
+        console.error("Failed to share using Capacitor:", err);
+        alert("لم تكتمل المشاركة، ولكن تم نسخ الكود الاحتياطي بالكامل إلى حافظة هاتفكم للضمان. يمكنك الآن لصقه وحفظه في أي تطبيق ملاحظات أو ملف نصي.");
+      }
+    } else {
+      const blob = new Blob([jsonString], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

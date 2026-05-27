@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useStore } from "../store";
 import {
   ChevronRight,
@@ -60,11 +60,41 @@ export default function OrderDetails() {
   const [copiedOrderId, setCopiedOrderId] = useState<string | null>(null);
   const [copiedSkuId, setCopiedSkuId] = useState<string | null>(null);
   const [copiedUrlId, setCopiedUrlId] = useState<string | null>(null);
-  const [showCustomerModal, setShowCustomerModal] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const showCustomerModal = searchParams.get("modal") === "customer";
+  const setShowCustomerModal = (val: boolean) => {
+    const params = new URLSearchParams(searchParams);
+    if (val) {
+      params.set("modal", "customer");
+    } else {
+      params.delete("modal");
+    }
+    setSearchParams(params);
+  };
   
-  const [showSelectBatchModal, setShowSelectBatchModal] = useState(false);
+  const showSelectBatchModal = searchParams.get("modal") === "select-batch";
+  const setShowSelectBatchModal = (val: boolean) => {
+    const params = new URLSearchParams(searchParams);
+    if (val) {
+      params.set("modal", "select-batch");
+    } else {
+      params.delete("modal");
+    }
+    setSearchParams(params);
+  };
   const [batchSearchQuery, setBatchSearchQuery] = useState("");
-  const [showSelectCustomerModal, setShowSelectCustomerModal] = useState(false);
+
+  const showSelectCustomerModal = searchParams.get("modal") === "select-customer";
+  const setShowSelectCustomerModal = (val: boolean) => {
+    const params = new URLSearchParams(searchParams);
+    if (val) {
+      params.set("modal", "select-customer");
+    } else {
+      params.delete("modal");
+    }
+    setSearchParams(params);
+  };
   const [customerSearchQuery, setCustomerSearchQuery] = useState("");
 
   const statuses: OrderStatus[] = [
@@ -152,7 +182,16 @@ export default function OrderDetails() {
   const [deleteItemConfirmId, setDeleteItemConfirmId] = useState<string | null>(
     null,
   );
-  const [showDeleteOrderConfirm, setShowDeleteOrderConfirm] = useState(false);
+  const showDeleteOrderConfirm = searchParams.get("modal") === "delete-order";
+  const setShowDeleteOrderConfirm = (val: boolean) => {
+    const params = new URLSearchParams(searchParams);
+    if (val) {
+      params.set("modal", "delete-order");
+    } else {
+      params.delete("modal");
+    }
+    setSearchParams(params);
+  };
 
   const removeItem = (itemId: string) => {
     setDeleteItemConfirmId(itemId);

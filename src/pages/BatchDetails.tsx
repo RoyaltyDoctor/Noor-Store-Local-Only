@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { useParams, useNavigate, Link, useBlocker } from "react-router-dom";
+import { useParams, useNavigate, Link, useBlocker, useSearchParams } from "react-router-dom";
 import { useStore, useSettingsStore } from "../store";
 import { OrderStatus, STATUS_LABELS, STATUS_COLORS } from "../types";
 import clsx from "clsx";
@@ -95,10 +95,32 @@ export default function BatchDetails() {
       action();
     }
   };
-  const [showLinkModal, setShowLinkModal] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const showLinkModal = searchParams.get("modal") === "link-order";
+  const setShowLinkModal = (val: boolean) => {
+    const params = new URLSearchParams(searchParams);
+    if (val) {
+      params.set("modal", "link-order");
+    } else {
+      params.delete("modal");
+    }
+    setSearchParams(params);
+  };
+
+  const showNewOrderModal = searchParams.get("modal") === "new-order";
+  const setShowNewOrderModal = (val: boolean) => {
+    const params = new URLSearchParams(searchParams);
+    if (val) {
+      params.set("modal", "new-order");
+    } else {
+      params.delete("modal");
+    }
+    setSearchParams(params);
+  };
+
   const [showDeliveredOrders, setShowDeliveredOrders] = useState(false);
   const [linkOrderSearchQuery, setLinkOrderSearchQuery] = useState("");
-  const [showNewOrderModal, setShowNewOrderModal] = useState(false);
   const [customerSearch, setCustomerSearch] = useState("");
   const [isAddingNewCustomer, setIsAddingNewCustomer] = useState(false);
   const [newCustomerForm, setNewCustomerForm] = useState({

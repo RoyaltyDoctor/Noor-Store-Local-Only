@@ -5,7 +5,7 @@ import React, {
   useRef,
 } from "react";
 import { useStore, useSettingsStore, useFilterStore, DateFilterType } from "../store";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   Plus,
   Search,
@@ -125,7 +125,19 @@ export default function Home() {
     };
   }, []);
 
-  const [showNewOrderModal, setShowNewOrderModal] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const showNewOrderModal = searchParams.get("modal") === "new-order";
+  const setShowNewOrderModal = (val: boolean) => {
+    const params = new URLSearchParams(searchParams);
+    if (val) {
+      params.set("modal", "new-order");
+    } else {
+      params.delete("modal");
+    }
+    setSearchParams(params);
+  };
+
   const [customerSearch, setCustomerSearch] = useState("");
   const [isAddingNewCustomer, setIsAddingNewCustomer] = useState(false);
   const [newCustomerForm, setNewCustomerForm] = useState({
@@ -136,7 +148,19 @@ export default function Home() {
   });
   const [showExtraFields, setShowExtraFields] = useState(false);
 
-  const [itemsModalOrder, setItemsModalOrder] = useState<Order | null>(null);
+  const itemsModalOrderId = searchParams.get("modal") === "items" ? searchParams.get("id") : null;
+  const itemsModalOrder = itemsModalOrderId ? orders.find((o) => o.id === itemsModalOrderId) || null : null;
+  const setItemsModalOrder = (order: Order | null) => {
+    const params = new URLSearchParams(searchParams);
+    if (order) {
+      params.set("modal", "items");
+      params.set("id", order.id);
+    } else {
+      params.delete("modal");
+      params.delete("id");
+    }
+    setSearchParams(params);
+  };
 
   const [copiedOrderId, setCopiedOrderId] = useState<string | null>(null);
 

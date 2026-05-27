@@ -48,11 +48,24 @@ export default function Layout() {
           return;
         }
 
-        if (currentPathRef.current === "/") {
+        // Check if there is a modal open in the URL hash/search
+        const hasUrlModal = window.location.search.includes("modal=") || window.location.hash.includes("modal=");
+        if (hasUrlModal) {
+          navigate(-1);
+          return;
+        }
+
+        const mainTabs = ["/", "/batches", "/customers", "/reports", "/settings"];
+        const currentPath = currentPathRef.current;
+
+        if (currentPath === "/") {
           // If on home route, show exit confirmation dialog
           setShowExitModal(true);
+        } else if (mainTabs.includes(currentPath)) {
+          // If on any of the core/main tabs, return to the default Home tab
+          navigate("/");
         } else {
-          // Otherwise, navigate back
+          // Otherwise (e.g. details page), navigate back
           navigate(-1);
         }
       };
@@ -78,7 +91,7 @@ export default function Layout() {
 
   return (
     <div className="flex justify-center items-start min-h-screen bg-gray-200 dark:bg-gray-600">
-      <div className="w-full max-w-md bg-gray-50 flex flex-col h-screen min-h-[100dvh] relative shadow-2xl ring-1 ring-gray-900/5 dark:bg-gray-900 dark:shadow-none dark:bg-gray-800">
+      <div className="w-full max-w-md landscape:max-w-full md:landscape:max-w-2xl lg:landscape:max-w-3xl bg-gray-50 flex flex-col h-screen min-h-[100dvh] relative shadow-2xl ring-1 ring-gray-900/5 dark:bg-gray-900 dark:shadow-none dark:bg-gray-800">
         {/* Exit Confirmation Modal */}
         {showExitModal && (
           <div className="absolute inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 transition-all">
