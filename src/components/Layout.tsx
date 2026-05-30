@@ -82,6 +82,70 @@ export default function Layout() {
     };
   }, [navigate]);
 
+  // Touch swipe gesture handlers for switching main tabs smoothly
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLElement>) => {
+    const currentPath = location.pathname;
+    const mainTabs = ["/customers", "/batches", "/", "/reports", "/settings"];
+    if (!mainTabs.includes(currentPath)) return;
+
+    // Check if the gesture starts inside a horizontally scrollable element
+    let target = e.target as HTMLElement | null;
+    while (target && target !== e.currentTarget) {
+      const style = window.getComputedStyle(target);
+      if (
+        (style.overflowX === "auto" || style.overflowX === "scroll") &&
+        target.scrollWidth > target.clientWidth
+      ) {
+        // Skip swipe gestures inside scrollable custom widgets/tabs/elements
+        return;
+      }
+      target = target.parentElement;
+    }
+
+    const touch = e.touches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent<HTMLElement>) => {
+    if (!touchStartRef.current) return;
+
+    const currentPath = location.pathname;
+    const mainTabs = ["/customers", "/batches", "/", "/reports", "/settings"];
+    if (!mainTabs.includes(currentPath)) {
+      touchStartRef.current = null;
+      return;
+    }
+
+    const touch = e.changedTouches[0];
+    const diffX = touch.clientX - touchStartRef.current.x;
+    const diffY = touch.clientY - touchStartRef.current.y;
+    touchStartRef.current = null;
+
+    // Minimum swipe distance of 65px; horizontal movement must be 1.5x larger than vertical movement
+    if (Math.abs(diffX) > 65 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
+      const currentIndex = mainTabs.indexOf(currentPath);
+      if (currentIndex === -1) return;
+
+      // In RTL Arabic layout, swiping left goes to next navigation index, right goes to previous index
+      let nextIndex = currentIndex;
+      if (diffX < 0) {
+        if (currentIndex < mainTabs.length - 1) {
+          nextIndex = currentIndex + 1;
+        }
+      } else {
+        if (currentIndex > 0) {
+          nextIndex = currentIndex - 1;
+        }
+      }
+
+      if (nextIndex !== currentIndex) {
+        navigate(mainTabs[nextIndex]);
+      }
+    }
+  };
+
   const handleExitApp = async () => {
     if (typeof window !== "undefined" && (window as any).Capacitor) {
       await CapApp.exitApp();
@@ -152,6 +216,8 @@ export default function Layout() {
         <main
           id="main-scroll-container"
           className="flex-1 overflow-y-auto no-scrollbar pb-20 relative"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
         >
           <Routes>
             <Route path="/" element={<HomeRoute />} />
