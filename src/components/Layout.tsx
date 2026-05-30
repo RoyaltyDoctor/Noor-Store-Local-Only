@@ -32,6 +32,36 @@ export default function Layout() {
   const mainTabs = ["/customers", "/batches", "/", "/reports", "/settings"];
   const [prevPath, setPrevPath] = useState(location.pathname);
   const [direction, setDirection] = useState(0); // 1 = slide left (next), -1 = slide right (prev)
+  const [isSwipe, setIsSwipe] = useState(false);
+
+  // Check if any popup dialog or modal is open in the application to lock swipe gestures
+  const isModalOrPopupOpen = () => {
+    const selectors = [
+      'div[class*="bg-black"]',
+      'div[class*="bg-gray-900/"]',
+      'div[class*="bg-gray-900\\/40"]',
+      '.backdrop-blur-sm',
+      '.backdrop-blur-xs',
+      'div[class*="fixed inset-0"]'
+    ];
+    for (const sel of selectors) {
+      if (document.querySelector(sel)) return true;
+    }
+    if (showExitModal) return true;
+    return false;
+  };
+
+  const slideVariants = {
+    enter: (custom: { direction: number; isSwipe: boolean }) => ({
+      x: custom.isSwipe && custom.direction > 0 ? "-100%" : custom.isSwipe && custom.direction < 0 ? "100%" : "0%",
+    }),
+    center: {
+      x: "0%",
+    },
+    exit: (custom: { direction: number; isSwipe: boolean }) => ({
+      x: custom.isSwipe && custom.direction > 0 ? "100%" : custom.isSwipe && custom.direction < 0 ? "-100%" : "0%",
+    }),
+  };
 
   useEffect(() => {
     currentPathRef.current = location.pathname;
@@ -48,6 +78,9 @@ export default function Layout() {
         setDirection(isGoingDeeper ? 1 : -1);
       }
       setPrevPath(location.pathname);
+      
+      // Reset swipe transition flag for subsequent direct tab clicks
+      setIsSwipe(false);
     }
   }, [location.pathname, prevPath]);
 
@@ -106,6 +139,8 @@ export default function Layout() {
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
 
   const handleTouchStart = (e: React.TouchEvent<HTMLElement>) => {
+    if (isModalOrPopupOpen()) return;
+
     const currentPath = location.pathname;
     const mainTabs = ["/customers", "/batches", "/", "/reports", "/settings"];
     if (!mainTabs.includes(currentPath)) return;
@@ -129,6 +164,11 @@ export default function Layout() {
   };
 
   const handleTouchEnd = (e: React.TouchEvent<HTMLElement>) => {
+    if (isModalOrPopupOpen()) {
+      touchStartRef.current = null;
+      return;
+    }
+
     if (!touchStartRef.current) return;
 
     const currentPath = location.pathname;
@@ -161,6 +201,8 @@ export default function Layout() {
       }
 
       if (nextIndex !== currentIndex) {
+        setDirection(nextIndex > currentIndex ? 1 : -1);
+        setIsSwipe(true);
         navigate(mainTabs[nextIndex]);
       }
     }
@@ -235,18 +277,20 @@ export default function Layout() {
         {/* Main Content Area with fluid native-like slide transitions */}
         <main
           id="main-scroll-container"
-          className="flex-1 overflow-y-auto no-scrollbar pb-20 relative flex flex-col"
+          className="flex-1 overflow-hidden relative flex flex-col"
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
         >
-          <AnimatePresence mode="wait">
+          <AnimatePresence mode="popLayout" custom={{ direction, isSwipe }} initial={false}>
             <motion.div
               key={location.pathname}
-              initial={{ opacity: 0, x: direction > 0 ? 35 : direction < 0 ? -35 : 0, filter: "blur(2px)" }}
-              animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, x: direction > 0 ? -35 : direction < 0 ? 35 : 0, filter: "blur(2px)" }}
-              transition={{ duration: 0.18, ease: "easeOut" }}
-              className="flex-1 flex flex-col w-full min-h-full"
+              custom={{ direction, isSwipe }}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ type: "tween", ease: "easeInOut", duration: 0.35 }}
+              className="w-full h-full absolute inset-0 flex flex-col overflow-y-auto no-scrollbar pb-20"
             >
               <Routes location={location}>
                 <Route path="/" element={<HomeRoute />} />
