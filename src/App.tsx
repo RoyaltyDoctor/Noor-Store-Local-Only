@@ -41,6 +41,9 @@ export default function App() {
       // Automatically sync status bar under Capacitor on mobile platforms
       if (Capacitor.isNativePlatform()) {
         try {
+          // Disable overlays webview to keep the app content strictly underneath the status bar immediately on boot
+          StatusBar.setOverlaysWebView({ overlay: false }).catch(() => {});
+
           if (activeTheme === "dark") {
             StatusBar.setStyle({ style: Style.Dark });
             // Exact hexadecimal match for Tailwind's bg-gray-800 in Header (dark:bg-gray-800 -> #1f2937)
