@@ -163,7 +163,7 @@ export default function Layout() {
     touchStartRef.current = { x: touch.clientX, y: touch.clientY };
   };
 
-  const handleTouchEnd = (e: React.TouchEvent<HTMLElement>) => {
+  const handleTouchMove = (e: React.TouchEvent<HTMLElement>) => {
     if (isModalOrPopupOpen()) {
       touchStartRef.current = null;
       return;
@@ -178,17 +178,16 @@ export default function Layout() {
       return;
     }
 
-    const touch = e.changedTouches[0];
+    const touch = e.touches[0];
     const diffX = touch.clientX - touchStartRef.current.x;
     const diffY = touch.clientY - touchStartRef.current.y;
-    touchStartRef.current = null;
 
-    // Minimum swipe distance of 65px; horizontal movement must be 1.5x larger than vertical movement
-    if (Math.abs(diffX) > 65 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
+    // Trigger instantly during dragging when distance surpasses a quick 65px threshold
+    // and horizontal movement is dominant (to prevent triggering accidentally on slow vertical scrolls)
+    if (Math.abs(diffX) > 65 && Math.abs(diffX) > Math.abs(diffY) * 2.0) {
       const currentIndex = mainTabs.indexOf(currentPath);
       if (currentIndex === -1) return;
 
-      // Adjusted swipe direction for precise RTL feel (swiping right goes to next index, left goes to previous index)
       let nextIndex = currentIndex;
       if (diffX < 0) {
         if (currentIndex > 0) {
@@ -201,11 +200,17 @@ export default function Layout() {
       }
 
       if (nextIndex !== currentIndex) {
+        // Clear touchStart immediately so we don't trigger multiple times during the same swipe
+        touchStartRef.current = null;
         setDirection(nextIndex > currentIndex ? 1 : -1);
         setIsSwipe(true);
         navigate(mainTabs[nextIndex]);
       }
     }
+  };
+
+  const handleTouchEnd = () => {
+    touchStartRef.current = null;
   };
 
   const handleExitApp = async () => {
@@ -279,6 +284,7 @@ export default function Layout() {
           id="main-scroll-container"
           className="flex-1 overflow-hidden relative flex flex-col"
           onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
         >
           <AnimatePresence mode="popLayout" custom={{ direction, isSwipe }} initial={false}>
