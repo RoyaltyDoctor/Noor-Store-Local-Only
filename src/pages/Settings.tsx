@@ -112,52 +112,64 @@ export default function Settings() {
 
     const jsonString = JSON.stringify(backupData, null, 2);
 
-    let fileNameParts = [];
-    if (exportOptions.customers) fileNameParts.push("Customers");
-    if (exportOptions.orders) fileNameParts.push("Orders");
-    if (exportOptions.batches) fileNameParts.push("Batches");
-    const fileName = `Noor-Store-${fileNameParts.join("-")}-${format(new Date(), "yyyy-MM-dd-HH-mm")}.json`;
+    // Simplified format: App name, date, and time
+    const fileName = `Noor-Store-${format(new Date(), "yyyy-MM-dd-HH-mm")}.json`;
 
     const isNative = Capacitor.isNativePlatform();
 
     if (isNative) {
       try {
-        // Copy to clipboard automatically as a solid background guarantee
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          await navigator.clipboard.writeText(jsonString);
-        }
-
-        // Write the JSON string to a cached file so Android can share it as an ACTUAL .json file!
-        const writeResult = await Filesystem.writeFile({
+        // Try direct file writing to the user's Documents directory (completely offline)
+        await Filesystem.writeFile({
           path: fileName,
           data: jsonString,
-          directory: Directory.Cache,
+          directory: Directory.Documents,
           encoding: Encoding.UTF8
         });
 
-        // Use standard Capacitor Share API to let user share/save the real file url
-        await Share.share({
-          title: fileName,
-          url: writeResult.uri,
-          dialogTitle: "حفظ وتصدير النسخة الاحتياطية",
-        });
-
-        alert("تم فتح خيارات النظام لحفظ الملف بنجاح! (تم أيضاً نسخ البيانات تلقائياً لحافظة هاتفك للضمان).");
+        alert(`تم التصدير بنجاح!\n\nتم حفظ الملف في مجلد المستندات (Documents) باسم:\n${fileName}`);
       } catch (err) {
-        console.error("Failed to share using Capacitor Filesystem:", err);
-        alert("لم تكتمل المشاركة، ولكن تم نسخ الكود الاحتياطي بالكامل إلى حافظة هاتفكم للضمان. يمكنك الآن لصقه وحفظه في أي تطبيق ملاحظات أو ملف نصي.");
+        console.error("Failed to write directly to Documents directory:", err);
+        
+        // Dynamic fallback to system share sheet if direct writing has permission issues
+        try {
+          const cacheResult = await Filesystem.writeFile({
+            path: fileName,
+            data: jsonString,
+            directory: Directory.Cache,
+            encoding: Encoding.UTF8
+          });
+
+          await Share.share({
+            title: fileName,
+            url: cacheResult.uri,
+            dialogTitle: "تصدير النسخة الاحتياطية",
+          });
+
+          alert("تم التصدير بنجاح!");
+        } catch (shareErr) {
+          console.error("Failed to share as fallback:", shareErr);
+          alert("تعذر تصدير الملف!");
+        }
       }
     } else {
-      const blob = new Blob([jsonString], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
+      try {
+        const blob = new Blob([jsonString], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
 
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = fileName;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        alert("تم التصدير بنجاح!");
+      } catch (browserErr) {
+        console.error("Browser download failed:", browserErr);
+        alert("تعذر تصدير الملف!");
+      }
     }
   };
 
