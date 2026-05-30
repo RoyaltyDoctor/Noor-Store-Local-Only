@@ -256,7 +256,10 @@ export default function Layout() {
         )}
 
         {/* Header */}
-        <header className="bg-white border-b px-4 py-2 flex items-center justify-between z-10 shadow-sm relative dark:bg-gray-800 dark:border-gray-700 dark:shadow-none">
+        <header 
+          className="bg-white border-b px-4 pb-2.5 flex items-center justify-between z-10 shadow-sm relative dark:bg-gray-800 dark:border-gray-700 dark:shadow-none"
+          style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 10px)" }}
+        >
           <div className="flex items-center gap-2.5">
             {imageError ? (
               <div className="w-8.5 h-8.5 rounded-full bg-purple-600 flex items-center justify-center text-white font-bold shrink-0">
