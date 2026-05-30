@@ -1,6 +1,7 @@
 import { Routes, Route, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { App as CapApp } from "@capacitor/app";
+import { motion, AnimatePresence } from "motion/react";
 import {
   Home,
   Users,
@@ -27,9 +28,28 @@ export default function Layout() {
   const currentPathRef = useRef(location.pathname);
   const showExitModalRef = useRef(false);
 
+  // States to track the active and previous page for high-fidelity direction-based navigation transitions
+  const mainTabs = ["/customers", "/batches", "/", "/reports", "/settings"];
+  const [prevPath, setPrevPath] = useState(location.pathname);
+  const [direction, setDirection] = useState(0); // 1 = slide left (next), -1 = slide right (prev)
+
   useEffect(() => {
     currentPathRef.current = location.pathname;
-  }, [location.pathname]);
+    
+    if (location.pathname !== prevPath) {
+      const prevIndex = mainTabs.indexOf(prevPath);
+      const currIndex = mainTabs.indexOf(location.pathname);
+      
+      if (prevIndex !== -1 && currIndex !== -1) {
+        setDirection(currIndex > prevIndex ? 1 : -1);
+      } else {
+        // Transition when going deeper into sub-details (order/batch detail pages -> +1, returning -> -1)
+        const isGoingDeeper = location.pathname.includes("/order/") || location.pathname.includes("/batch/");
+        setDirection(isGoingDeeper ? 1 : -1);
+      }
+      setPrevPath(location.pathname);
+    }
+  }, [location.pathname, prevPath]);
 
   useEffect(() => {
     showExitModalRef.current = showExitModal;
@@ -128,15 +148,15 @@ export default function Layout() {
       const currentIndex = mainTabs.indexOf(currentPath);
       if (currentIndex === -1) return;
 
-      // In RTL Arabic layout, swiping left goes to next navigation index, right goes to previous index
+      // Adjusted swipe direction for precise RTL feel (swiping right goes to next index, left goes to previous index)
       let nextIndex = currentIndex;
       if (diffX < 0) {
-        if (currentIndex < mainTabs.length - 1) {
-          nextIndex = currentIndex + 1;
-        }
-      } else {
         if (currentIndex > 0) {
           nextIndex = currentIndex - 1;
+        }
+      } else {
+        if (currentIndex < mainTabs.length - 1) {
+          nextIndex = currentIndex + 1;
         }
       }
 
@@ -212,22 +232,33 @@ export default function Layout() {
           </div>
         </header>
 
-        {/* Main Content Area */}
+        {/* Main Content Area with fluid native-like slide transitions */}
         <main
           id="main-scroll-container"
-          className="flex-1 overflow-y-auto no-scrollbar pb-20 relative"
+          className="flex-1 overflow-y-auto no-scrollbar pb-20 relative flex flex-col"
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
         >
-          <Routes>
-            <Route path="/" element={<HomeRoute />} />
-            <Route path="/batches" element={<BatchesRoute />} />
-            <Route path="/customers" element={<CustomersRoute />} />
-            <Route path="/reports" element={<ReportsRoute />} />
-            <Route path="/order/:id" element={<OrderDetailsRoute />} />
-            <Route path="/batch/:id" element={<BatchDetailsRoute />} />
-            <Route path="/settings" element={<SettingsRoute />} />
-          </Routes>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, x: direction > 0 ? 35 : direction < 0 ? -35 : 0, filter: "blur(2px)" }}
+              animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+              exit={{ opacity: 0, x: direction > 0 ? -35 : direction < 0 ? 35 : 0, filter: "blur(2px)" }}
+              transition={{ duration: 0.18, ease: "easeOut" }}
+              className="flex-1 flex flex-col w-full min-h-full"
+            >
+              <Routes location={location}>
+                <Route path="/" element={<HomeRoute />} />
+                <Route path="/batches" element={<BatchesRoute />} />
+                <Route path="/customers" element={<CustomersRoute />} />
+                <Route path="/reports" element={<ReportsRoute />} />
+                <Route path="/order/:id" element={<OrderDetailsRoute />} />
+                <Route path="/batch/:id" element={<BatchDetailsRoute />} />
+                <Route path="/settings" element={<SettingsRoute />} />
+              </Routes>
+            </motion.div>
+          </AnimatePresence>
         </main>
 
         {/* Bottom Navigation */}
